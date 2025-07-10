@@ -1,0 +1,20 @@
+# STM32CubeIDE
+*.launch
+*.uvoptx
+*.uvprojx
+*.cproject
+*.project
+.settings/
+Debug/
+build/
+*.elf
+*.hex
+*.map
+*.bin
+*.o
+*.dep
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
