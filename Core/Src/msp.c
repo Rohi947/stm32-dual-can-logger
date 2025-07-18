@@ -114,6 +114,8 @@ void HAL_MspInit(void)
 
  void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
  {
+	 if(hspi->Instance == SPI1)
+	 {
 	 __HAL_RCC_SPI1_CLK_ENABLE();
 	 __HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -127,4 +129,23 @@ void HAL_MspInit(void)
 
 	 HAL_NVIC_SetPriority(SPI1_IRQn, 15, 15);
 	 HAL_NVIC_EnableIRQ(SPI1_IRQn);
+ }
+	 else if(hspi->Instance == SPI3)
+	 {
+		    __HAL_RCC_SPI3_CLK_ENABLE();
+		    __HAL_RCC_GPIOC_CLK_ENABLE();
+
+		    gpio_init.Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
+		    gpio_init.Mode = GPIO_MODE_AF_PP;
+		    gpio_init.Pull = GPIO_NOPULL;
+		    gpio_init.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		    gpio_init.Alternate = GPIO_AF6_SPI3;
+		    HAL_GPIO_Init(GPIOC, &gpio_init);
+
+		    gpio_init.Pin =GPIO_PIN_9;
+		    gpio_init.Mode = GPIO_MODE_OUTPUT_PP;
+		    gpio_init.Pull = GPIO_NOPULL;
+		    gpio_init.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+		    HAL_GPIO_Init(GPIOC,  &gpio_init);
+	 }
  }

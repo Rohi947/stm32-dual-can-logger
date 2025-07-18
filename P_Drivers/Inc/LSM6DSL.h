@@ -171,7 +171,7 @@
 #define FS_G_2000DPS                  									(0x3 << 2)
 
 // FS_125 – Set bit 0 to enable 125 dps full scale
-#define FS_G_125DPS                   										(0x1 << 0)
+#define FS_G_125DPS                   										(0x1 << 1)
 
 // CTRL3_C (0x12) – Common Control
 #define SW_RESET                        										(0x1 << 0)
@@ -425,10 +425,12 @@ void lsm6ds3_route_interrupt_to_int1(uint8_t mask);
 void lsm6ds3_route_interrupt_to_int2(uint8_t mask);
 
 //Sensor Data Reading
-void lsm6ds3_read_accel(int16_t* ax, int16_t* ay, int16_t* az);
-void lsm6ds3_read_gyro(int16_t* gx, int16_t* gy, int16_t* gz);
-void lsm6ds3_read_temp(int16_t* temp_raw);
+void lsm6ds3_read_accel(float* ax_g, float* ay_g, float* az_g);
+void lsm6ds3_read_gyro(float* gx_dps, float* gy_dps, float* gz_dps);
+void lsm6ds3_read_temp(float* temp);
 void lsm6ds3_read_timestamp(uint32_t* timestamp);
+double get_accel_sensitivity(void);
+double get_gyro_sensitivity(void);
 
 //Tap Detection
 void lsm6ds3_enable_tap(void);

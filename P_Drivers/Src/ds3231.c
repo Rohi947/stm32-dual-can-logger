@@ -6,7 +6,7 @@
  */
 
 
-#include <ds3231.h>
+#include "ds3231.h"
 
 extern  I2C_HandleTypeDef myi2c;
 
@@ -29,7 +29,7 @@ uint8_t bin2bcd(uint8_t bin)
 	return ret;
 }
 
-static void my_memset(void* ptr, ssize_t size)
+static void my_memset(void* ptr, uint8_t size)
 {
 	if(ptr == NULL)
 			return;

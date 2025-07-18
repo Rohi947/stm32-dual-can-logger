@@ -15,7 +15,7 @@ const uint16_t lsb_table[4] = {256, 128, 64, 32};
 void adxl_init(struct ADXL_Handle_t *myadxl)
 {
 	//check if the device is matching
-	uint8_t reg_address = DEVID_REG;
+	//uint8_t reg_address = DEVID_REG;
 	uint8_t tx_reg[2] = {0};
 	uint8_t rx_reg[2] = {0};
 	uint8_t val = 0;

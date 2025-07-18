@@ -27,7 +27,7 @@ void lsm6ds3_write(uint8_t reg, uint8_t val)
 void lsm6ds3_read(uint8_t reg, uint8_t* val, int count)
 {
 	uint8_t buf = reg;
-    HAL_I2C_Master_Transmit(&myi2c2, LSM6DSL_ADD, buf, 1, HAL_MAX_DELAY);
+    HAL_I2C_Master_Transmit(&myi2c2, LSM6DSL_ADD, &buf, 1, HAL_MAX_DELAY);
     HAL_I2C_Master_Receive(&myi2c2, LSM6DSL_ADD, val, count, HAL_MAX_DELAY);
 }
 
@@ -37,10 +37,9 @@ void lsm6ds3_init(void)
 {
 
 	lsm6ds3_write(CTRL3_C, SW_RESET);
-
+	uint8_t temp[2] = {0};
 	do
 	{
-		uint8_t temp[2] = {0};
 		temp[0] = CTRL3_C;
 		HAL_I2C_Master_Transmit(&myi2c2, LSM6DSL_ADD, temp, 1, HAL_MAX_DELAY);
 		HAL_I2C_Master_Receive(&myi2c2, LSM6DSL_ADD, temp+1, 1, HAL_MAX_DELAY);
@@ -57,7 +56,7 @@ void lsm6ds3_init(void)
 	lsm6ds3_write(CTRL7_G, GYRO_HPF_ENABLE | GYRO_HPF_65mHz);
 
 	full_scale_g = FS_G_500DPS;
-	lsm6ds3_enable_gyro(ODR_G_208HZw, FS_G_500DPS);
+	lsm6ds3_enable_gyro(ODR_G_208HZ, FS_G_500DPS);
 
 	lsm6ds3_write(CTRL10_C, (TIMER_EN) | (FUNC_EN) | (WRIST_TILT_EN));
 
@@ -120,22 +119,22 @@ void lsm6ds3_enable_gyro(uint8_t odr, uint8_t fs)
 
 void lsm6ds3_set_accel_lpf(uint8_t lpf_cfg)
 {
-    lsm6dsl_write(CTRL8_XL, lpf_cfg);
+	lsm6ds3_write(CTRL8_XL, lpf_cfg);
 }
 
 void lsm6ds3_set_gyro_lpf(uint8_t ftype)
 {
-    lsm6dsl_write(CTRL6_C, ftype);
+	lsm6ds3_write(CTRL6_C, ftype);
 }
 
 void lsm6ds3_route_interrupt_to_int1(uint8_t mask)
 {
-    lsm6dsl_write(MD1_CFG, mask);
+	lsm6ds3_write(MD1_CFG, mask);
 }
 
 void lsm6ds3_route_interrupt_to_int2(uint8_t mask)
 {
-    lsm6dsl_write(MD2_CFG, mask);
+	lsm6ds3_write(MD2_CFG, mask);
 }
 
 void lsm6ds3_read_accel(float* ax_g, float* ay_g, float* az_g)
@@ -184,7 +183,7 @@ void lsm6ds3_read_temp(float* temp)
 	uint8_t buf[2] = {0};
 	lsm6ds3_read(OUT_TEMP_L, buf, 2);
 	int16_t raw = (buf[1] << 8 ) | buf[0];
-	*temp = 25.0f + (temp / 256.0f);
+	*temp = 25.0f + (raw / 256.0f);
 }
 
 void lsm6ds3_read_timestamp(uint32_t* timestamp)
@@ -231,7 +230,7 @@ void lsm6ds3_enable_tap(void)
 
 void lsm6ds3_read_tap_status(uint8_t* tap_src)
 {
-    lsm6ds3_read(TAP_SRC, tap_src, 1);
+    lsm6ds3_read(TAP_SRC_REG, tap_src, 1);
 }
 
 //Wrist Detection
@@ -253,7 +252,7 @@ void lsm6ds3_read_status(uint8_t* status_reg)
 
 void lsm6ds3_read_func_src(uint8_t* func_src1)
 {
-    lsm6ds3_read(FUNC_SRC1, func_src1, 1);
+    lsm6ds3_read(FUNC_SRC1_REG, func_src1, 1);
 }
 
 

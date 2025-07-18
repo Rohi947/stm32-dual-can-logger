@@ -7,6 +7,7 @@
 #include "main.h"
 #include "peripheral_init.h"
 #include "adxl345.h"
+#include "fatfs.h"
 
 #define LIGHT_THRESH 999
 
@@ -16,6 +17,8 @@ extern I2C_HandleTypeDef myi2c;
 extern ADC_HandleTypeDef myadc1;
 extern ADC_HandleTypeDef myadc2;
 extern  TIM_HandleTypeDef mytim;
+extern SPI_HandleTypeDef myspi1;
+extern SPI_HandleTypeDef myspi2;
 
 volatile uint16_t adc1_result = 0;
 volatile uint8_t adc1_flag = 0;
@@ -52,6 +55,9 @@ int main()
 	MX_ADC1_Init();
 	MX_ADC2_Init();
 	MX_TIM4_Init();
+	MX_SPI1_Init();
+	MX_SPI3_Init();
+	MX_FATFS_Init();
 
 	HAL_TIM_PWM_Start(&mytim, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&mytim, TIM_CHANNEL_2);
@@ -83,7 +89,8 @@ int main()
 				__HAL_TIM_SET_COMPARE(&mytim, TIM_CHANNEL_1, adc1_val);
 				__HAL_TIM_SET_COMPARE(&mytim, TIM_CHANNEL_2,  adc2_val);
 
-				printf("Water Level: %d\n Light Level: %d\n", adc1_val, adc2_val);
+				char msg[150] = {0};
+				snprintf(msg, 150, "Water Level: %d\n Light Level: %d\n", adc1_val, adc2_val);
         }
 
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, DISABLE);
