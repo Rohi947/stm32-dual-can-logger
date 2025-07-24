@@ -94,7 +94,7 @@ void lsm6ds3_set_bank(uint8_t bank_flag)
 //Sensor Configuration
 void lsm6ds3_enable_accel(uint8_t odr, uint8_t fs)
 {
-	if((odr >= ODR_XL_POWER_DOWN) && (odr <= ODR_XL_6_66KHZ) && (fs >= FS_XL_2G)  && (fs <= FS_XL_2G))
+	if((odr >= ODR_XL_POWER_DOWN) && (odr <= ODR_XL_6_66KHZ) && (fs >= FS_XL_2G)  && (fs <= FS_XL_8G))
 	{
 		full_scale_xl = fs;
 		lsm6ds3_write(CTRL1_XL, odr | fs);
@@ -274,3 +274,95 @@ void lsm6ds3_software_reset(void)
             break;
     }
 }
+
+/************************************************
+ * User can modify these functions but calling lsm6ds3_init()
+ * is necessary unless you have implemented a new version
+ ************************************************/
+__weak void imu_init(void)
+{
+
+	IMU_alive();
+	test_lsm6dsl_whoami();
+	test_lis3mdl_whoami();
+
+	lsm6ds3_init();
+
+	lsm6ds3_write(TAP_THS_6D, 0x03);
+	lsm6ds3_write(INT_DUR2, 0x7F);
+	lsm6ds3_write(WAKE_UP_THS_REG, (1 << 7));
+
+	lsm6ds3_write(TAP_CFG, TAP_CFG_TAP_X_EN | TAP_CFG_TAP_Y_EN | TAP_CFG_TAP_Z_EN | TAP_CFG_INT_ENABLE);
+
+	lsm6ds3_enable_accel(ODR_XL_104HZ, FS_XL_2G);
+
+	lsm6ds3_write(CTRL10_C, TIMER_EN | TILT_EN |  FUNC_EN | WRIST_TILT_EN);
+}
+
+__weak void poll_imu(void)
+{
+	float ax, ay, az;
+	float gx, gy, gz;
+	float temp;
+	uint32_t ts;
+
+	lsm6ds3_read_accel(&ax, &ay, &az);
+	printf("Accel: X=%.2f Y=%.2f Z=%.2f\r\n", ax, ay, az);
+
+	lsm6ds3_read_gyro(&gx, &gy, &gz);
+	printf("Gyro: X=%.2f dps Y=%.2f dps Z=%.2f dps\r\n", gx, gy, gz);
+
+	lsm6ds3_read_temp(&temp);
+	printf("Temperature: %.2f C\r\n", temp);
+
+	lsm6ds3_read_timestamp(&ts);
+	printf("Timestamp: %lu ms\r\n", ts);
+
+	uint8_t tap_src = 0;
+	uint8_t tilt_src = 0;
+
+	lsm6ds3_read_tap_status(&tap_src);
+	lsm6ds3_read_wrist_tilt(&tilt_src);
+
+	if (tap_src & 0x20) printf("Single Tap Detected\r\n");
+	if (tap_src & 0x10) printf("Double Tap Detected\r\n");
+	if ((tilt_src & 0x80) || (tilt_src & 0x40)) printf("Wrist Tilt Detected\r\n");
+
+	HAL_Delay(100);
+}
+
+
+void IMU_alive(void)
+{
+	for(uint8_t addr = 0x00; addr < 0x7F; addr++) {
+		if (HAL_I2C_IsDeviceReady(&myi2c2, addr << 1, 1, 10) == HAL_OK) {
+			printf("Found device at 0x%02X\r\n", addr);
+		}
+	}
+}
+
+void test_lsm6dsl_whoami(void)
+{
+    uint8_t id = 0;
+
+//    HAL_I2C_Master_Transmit(&myi2c, LSM6DSL_ADD << 1, &reg, 1, HAL_MAX_DELAY);
+//    HAL_I2C_Master_Receive(&myi2c, LSM6DSL_ADD << 1, &id, 1, HAL_MAX_DELAY);
+    lsm6ds3_read(WHO_AM_I, &id, 1);
+
+    if (id == 0x6A)
+        printf("LSM6DSL detected. WHO_AM_I = 0x%02X\r\n", id);
+    else
+        printf("Unexpected WHO_AM_I from LSM6DSL: 0x%02X\r\n", id);
+}
+
+void test_lis3mdl_whoami(void)
+{
+    uint8_t reg = 0x0F;
+    uint8_t id = 0;
+
+    HAL_I2C_Master_Transmit(&myi2c2, 0x1C << 1, &reg, 1, HAL_MAX_DELAY);
+    HAL_I2C_Master_Receive(&myi2c2, 0x1C << 1, &id, 1, HAL_MAX_DELAY);
+
+    printf("LIS3MDL WHO_AM_I = 0x%02X\r\n", id);
+}
+

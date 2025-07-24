@@ -33,6 +33,9 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "peripheral_init.h"
+#include "adxl345.h"
+#include "LSM6DSL.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

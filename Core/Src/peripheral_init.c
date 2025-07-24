@@ -13,7 +13,10 @@
  ADC_HandleTypeDef myadc1;
  ADC_HandleTypeDef myadc2;
  TIM_HandleTypeDef mytim;
- SPI_HandleTypeDef myspi;
+ SPI_HandleTypeDef myspi1;
+ SPI_HandleTypeDef myspi3;
+ CAN_HandleTypeDef mycan1;
+ CAN_HandleTypeDef mycan2;
 
 void SystemClock_Config(void)
 {
@@ -100,6 +103,23 @@ void MX_I2C1_Init(void)
 	myi2c.Init.OwnAddress1 = 0;
 	myi2c.Init.OwnAddress2 = 0;
 	if(HAL_I2C_Init(&myi2c) != HAL_OK)
+	{
+		Error_Handler();
+	}
+}
+
+void MX_I2C2_Init(void)
+{
+	myi2c2.Instance = I2C2;
+	myi2c2.Mode = HAL_I2C_MODE_MASTER;
+	myi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+	myi2c2.Init.ClockSpeed = 100000;
+	myi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+	myi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+	myi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+	myi2c2.Init.OwnAddress1 = 0;
+	myi2c2.Init.OwnAddress2 = 0;
+	if(HAL_I2C_Init(&myi2c2) != HAL_OK)
 	{
 		Error_Handler();
 	}
@@ -204,20 +224,81 @@ void MX_TIM4_Init(void)
 
 void MX_SPI1_Init(void)
 {
-	myspi.Instance = SPI1;
-	myspi.Init.Mode = SPI_MODE_MASTER;
-	myspi.Init.FirstBit = SPI_FIRSTBIT_MSB;
-	myspi.Init.Direction = SPI_DIRECTION_2LINES;
-	myspi.Init.DataSize = SPI_DATASIZE_8BIT;
-	myspi.Init.NSS = SPI_NSS_HARD_OUTPUT;
-	myspi.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
-	myspi.Init.CLKPhase = SPI_PHASE_2EDGE;
-	myspi.Init.CLKPolarity = SPI_POLARITY_HIGH;
+	myspi1.Instance = SPI1;
+	myspi1.Init.Mode = SPI_MODE_MASTER;
+	myspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	myspi1.Init.Direction = SPI_DIRECTION_2LINES;
+	myspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+	myspi1.Init.NSS = SPI_NSS_HARD_OUTPUT;
+	myspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
+	myspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+	myspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
 
-	if(HAL_SPI_Init(&myspi) != HAL_OK)
+	if(HAL_SPI_Init(&myspi1) != HAL_OK)
 	{
 		Error_Handler();
 	}
+}
+
+void MX_SPI3_Init(void)
+{
+	myspi3.Instance = SPI3;
+	myspi3.Init.Mode = SPI_MODE_MASTER;
+	myspi3.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	myspi3.Init.Direction = SPI_DIRECTION_2LINES;
+	myspi3.Init.DataSize = SPI_DATASIZE_8BIT;
+	myspi3.Init.NSS = SPI_NSS_SOFT;
+	myspi3.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+	myspi3.Init.CLKPhase = SPI_PHASE_2EDGE;
+	myspi3.Init.CLKPolarity = SPI_POLARITY_HIGH;
+
+	if(HAL_SPI_Init(&myspi3) != HAL_OK)
+	{
+		Error_Handler();
+	}
+}
+
+
+
+void MX_CAN1_Init(void)
+{
+  mycan1.Instance = CAN1;
+  mycan1.Init.Prescaler = 6;
+  mycan1.Init.Mode = CAN_MODE_NORMAL;
+  mycan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
+  mycan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+  mycan1.Init.TimeSeg2 = CAN_BS2_2TQ;
+  mycan1.Init.TimeTriggeredMode = DISABLE;
+  mycan1.Init.AutoBusOff = DISABLE;
+  mycan1.Init.AutoWakeUp = DISABLE;
+  mycan1.Init.AutoRetransmission = ENABLE;
+  mycan1.Init.ReceiveFifoLocked = DISABLE;
+  mycan1.Init.TransmitFifoPriority = DISABLE;
+  if (HAL_CAN_Init(&mycan1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+
+void MX_CAN2_Init(void)
+{
+  mycan2.Instance = CAN2;
+  mycan2.Init.Prescaler = 6;
+  mycan2.Init.Mode = CAN_MODE_NORMAL;
+  mycan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
+  mycan2.Init.TimeSeg1 = CAN_BS1_13TQ;
+  mycan2.Init.TimeSeg2 = CAN_BS2_2TQ;
+  mycan2.Init.TimeTriggeredMode = DISABLE;
+  mycan2.Init.AutoBusOff = DISABLE;
+  mycan2.Init.AutoWakeUp = DISABLE;
+  mycan2.Init.AutoRetransmission = ENABLE;
+  mycan2.Init.ReceiveFifoLocked = DISABLE;
+  mycan2.Init.TransmitFifoPriority = DISABLE;
+  if (HAL_CAN_Init(&mycan2) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 //Error Handler

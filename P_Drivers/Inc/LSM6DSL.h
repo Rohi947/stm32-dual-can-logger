@@ -10,7 +10,7 @@
 
 #include "main.h"
 
-#define LSM6DSL_ADD														0b1101010
+#define LSM6DSL_ADD														0b1101010 << 1
 
 /****************
  * Registers
@@ -413,6 +413,8 @@
 //Initialization and Setup
 void lsm6ds3_init(void);
 void lsm6ds3_set_bank(uint8_t bank_flag);
+void lsm6ds3_write(uint8_t reg, uint8_t val);
+void lsm6ds3_read(uint8_t reg, uint8_t* val, int count);
 
 //Sensor Configuration
 void lsm6ds3_enable_accel(uint8_t odr, uint8_t fs);
@@ -448,6 +450,12 @@ void lsm6ds3_read_func_src(uint8_t* func_src1);
 void lsm6ds3_reboot(void);
 void lsm6ds3_software_reset(void);
 
-
+//Additional API's
+__weak void imu_init(void);
+void IMU_alive(void);
+void test_lsm6dsl_whoami(void);
+void poll_imu(void);
+void test_lis3mdl_whoami(void);
+void test_lsm6dsl_whoami(void);
 
 #endif /* INC_LSM6DSL_H_ */
